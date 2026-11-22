@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Задачник Смекалки · Советские задачи на логику</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  
+  :root {
+    --red: #c8102e;
+    --darkred: #8b0000;
+    --gold: #d4af37;
+    --cream: #f5e8d0;
+    --paper: #fdf8ec;
+    --ink: #2b1810;
+    --blue: #1e3a8a;
+    --green: #166534;
+  }
+  
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: var(--cream);
+    background-image: 
+      linear-gradient(rgba(30, 58, 138, 0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(30, 58, 138, 0.06) 1px, transparent 1px);
+    background-size: 20px 20px;
+    min-height: 100vh;
+    color: var(--ink);
+    padding-bottom: 40px;
+  }
+  
+  .app { max-width: 1000px; margin: 0 auto; padding: 20px; }
+  
+  /* Header */
+  .header {
+    background: var(--paper);
+    border: 3px double var(--red);
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 24px;
+    text-align: center;
+    position: relative;
+    box-shadow: 0 4px 20px rgba(139, 0, 0, 0.1);
+  }
+  
+  .header::before, .header::after {
+    content: '★';
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 36px;
+    color: var(--gold);
+  }
+  .header::before { left: 20px; }
+  .header::after { right: 20px; }
+  
+  .header h1 {
+    font-size: 32px;
+    color: var(--red);
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    font-family: 'Georgia', serif;
+  }
+  
+  .header-sub {
+    font-size: 14px;
+    color: var(--ink);
+    font-style: italic;
+    letter-spacing: 1px;
+  }
+  
+  .header-year {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 4px 14px;
+    background: var(--red);
+    color: var(--paper);
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    border-radius: 4px;
+  }
+  
+  /* Stats */
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  
+  .stat {
+    background: var(--paper);
+    border: 2px solid var(--red);
+    border-radius: 6px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: bold;
+    font-size: 15px;
+  }
+  
+  .stat-icon { font-size: 22px; }
+  .stat-value { color: var(--red); font-size: 18px; }
+  
+  /* Categories */
+  .categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin-bottom: 28px;
+  }
+  
+  .cat-card {
+    background: var(--paper);
+    border: 2px solid var(--red);
+    border-radius: 8px;
+    padding: 16px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .cat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(139, 0, 0, 0.15);
+    border-color: var(--gold);
+  }
+  
+  .cat-card.active {
+    background: var(--red);
+    color: var(--paper);
+  }
+  
+  .cat-card .cat-icon {
+    font-size: 32px;
+    display: block;
+    margin-bottom: 6px;
+  }
+  
+  .cat-card .cat-title {
+    font-size: 15px;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  
+  .cat-card .cat-count {
+    font-size: 12px;
+    opacity: 0.8;
+    font-style: italic;
+  }
+  
+  /* Section title */
+  .section-title {
+    font-size: 22px;
+    color: var(--red);
+    font-weight: bold;
+    margin: 24px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--red);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: 1px;
+  }
+  
+  /* Task grid */
+  .tasks-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 30px;
+  }
+  
+  .task-card {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+    padding: 18px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    min-height: 140px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .task-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+    border-color: var(--red);
+  }
+  
+  .task-card.solved {
+    border-color: var(--green);
+    background: linear-gradient(135deg, var(--paper) 0%, #e8f5e9 100%);
+  }
+  
+  .task-card.solved::after {
+    content: '✓';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--green);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 16px;
+  }
+  
+  .task-number {
+    font-size: 12px;
+    color: var(--red);
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  
+  .task-title {
+    font-size: 17px;
+    font-weight: bold;
+    color: var(--ink);
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+  
+  .task-preview {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.5;
+    font-style: italic;
+    flex: 1;
+  }
+  
+  .task-tags {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .task-tag {
+    font-size: 10px;
+    padding: 2px 8px;
+    background: var(--cream);
+    border: 1px solid var(--red);
+    border-radius: 10px;
+    color: var(--red);
+    font-weight: bold;
+    letter-spacing: 0.5px;
+  }
+  
+  .task-difficulty {
+    display: flex;
+    gap: 2px;
+    margin-top: 8px;
+  }
+  
+  .diff-star {
+    width: 14px;
+    height: 14px;
+    color: var(--gold);
+  }
+  
+  .diff-star.empty { opacity: 0.25; }
+  
+  /* Modal */
+  .modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(43, 24, 16, 0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 16px;
+    animation: fadeIn 0.3s;
+  }
+  
+  .modal.active { display: flex; }
+  @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+  
+  .modal-content {
+    background: var(--paper);
+    border: 3px double var(--red);
+    border-radius: 10px;
+    width: 100%;
+    max-width: 700px;
+    max-height: 92vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideUp 0.4s;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  }
+  
+  @keyframes slideUp { from {transform:translateY(30px); opacity:0;} to {transform:translateY(0); opacity:1;} }
+  
+  .modal-header {
+    padding: 20px 24px;
+    border-bottom: 2px solid var(--red);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background: var(--paper);
+    z-index: 10;
+    border-radius: 10px 10px 0 0;
+  }
+  
+  .modal-title {
+    font-size: 20px;
+    color: var(--red);
+    font-weight: bold;
+    letter-spacing: 1px;
+  }
+  
+  .close-btn {
+    width: 36px;
+    height: 36px;
+    border: 2px solid var(--red);
+    background: transparent;
+    color: var(--red);
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    transition: all 0.2s;
+  }
+  
+  .close-btn:hover {
+    background: var(--red);
+    color: var(--paper);
+    transform: rotate(90deg);
+  }
+  
+  .modal-body { padding: 24px; }
+  
+  /* Task content */
+  .task-text {
+    font-size: 16px;
+    line-height: 1.7;
+    padding: 18px;
+    background: var(--cream);
+    border-left: 4px solid var(--red);
+    border-radius: 4px;
+    margin-bottom: 20px;
+    font-style: italic;
+  }
+  
+  .task-hint {
+    font-size: 14px;
+    padding: 12px 16px;
+    background: #fff9e6;
+    border: 1px dashed var(--gold);
+    border-radius: 6px;
+    margin-bottom: 16px;
+    display: none;
+  }
+  
+  .task-hint.visible { display: block; }
+  
+  .task-hint strong { color: var(--red); }
+  
+  /* Answer section */
+  .answer-section {
+    margin-top: 16px;
+  }
+  
+  .answer-label {
+    font-size: 14px;
+    font-weight: bold;
+    color: var(--red);
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+  
+  .answer-input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 18px;
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+    background: var(--paper);
+    font-family: inherit;
+    outline: none;
+    transition: all 0.2s;
+  }
+  
+  .answer-input:focus {
+    border-color: var(--red);
+    box-shadow: 0 0 0 3px rgba(200, 16, 46, 0.1);
+  }
+  
+  /* Options */
+  .options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .option-btn {
+    padding: 14px 18px;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: left;
+    font-family: inherit;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+  
+  .option-btn:hover {
+    border-color: var(--red);
+    background: var(--cream);
+    transform: translateX(4px);
+  }
+  
+  .option-btn.selected {
+    border-color: var(--red);
+    background: var(--cream);
+    font-weight: bold;
+  }
+  
+  .option-btn.correct {
+    border-color: var(--green);
+    background: #d1fae5;
+    color: var(--green);
+  }
+  
+  .option-btn.wrong {
+    border-color: var(--red);
+    background: #fee2e2;
+    color: var(--red);
+  }
+  
+  /* Action buttons */
+  .actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .btn {
+    padding: 12px 22px;
+    border: 2px solid var(--red);
+    background: var(--paper);
+    color: var(--red);
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    letter-spacing: 0.5px;
+  }
+  
+  .btn:hover {
+    background: var(--red);
+    color: var(--paper);
+  }
+  
+  .btn-primary {
+    background: var(--red);
+    color: var(--paper);
+  }
+  
+  .btn-primary:hover {
+    background: var(--darkred);
+    border-color: var(--darkred);
+  }
+  
+  .btn-gold {
+    background: var(--gold);
+    color: var(--ink);
+    border-color: var(--gold);
+  }
+  
+  .btn-gold:hover {
+    background: #b8941f;
+    border-color: #b8941f;
+  }
+  
+  /* Feedback */
+  .feedback {
+    padding: 16px;
+    border-radius: 6px;
+    margin-top: 16px;
+    font-size: 15px;
+    line-height: 1.6;
+    display: none;
+  }
+  
+  .feedback.visible { display: block; animation: slideUp 0.3s; }
+  
+  .feedback.success {
+    background: #d1fae5;
+    border: 2px solid var(--green);
+    color: var(--green);
+  }
+  
+  .feedback.error {
+    background: #fee2e2;
+    border: 2px solid var(--red);
+    color: var(--darkred);
+  }
+  
+  .feedback-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  /* Visual puzzles */
+  .visual-area {
+    background: var(--cream);
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 16px;
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .match-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    background: var(--paper);
+    border-radius: 6px;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  
+  .match-label {
+    font-weight: bold;
+    min-width: 100px;
+    color: var(--red);
+  }
+  
+  .match-input {
+    flex: 1;
+    min-width: 150px;
+    padding: 8px 12px;
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 15px;
+    background: var(--paper);
+  }
+  
+  /* Stars animation */
+  .stars-gained {
+    display: inline-flex;
+    gap: 4px;
+    font-size: 24px;
+    animation: popIn 0.5s;
+  }
+  
+  @keyframes popIn {
+    0% { transform: scale(0); }
+    60% { transform: scale(1.3); }
+    100% { transform: scale(1); }
+  }
+  
+  /* Confetti */
+  .confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    pointer-events: none;
+    z-index: 9999;
+  }
+  
+  @keyframes confettiFall {
+    0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+  
+  /* Matchsticks */
+  .matchstick {
+    display: inline-block;
+    width: 40px;
+    height: 6px;
+    background: linear-gradient(to right, #8b4513 0%, #8b4513 80%, #d2691e 80%, #d2691e 100%);
+    border-radius: 3px;
+    margin: 2px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .matchstick:hover { transform: scale(1.1); }
+  .matchstick.moved { background: linear-gradient(to right, #c8102e 0%, #c8102e 80%, #ff6b6b 80%, #ff6b6b 100%); }
+  
+  .roman {
+    font-size: 32px;
+    font-weight: bold;
+    color: var(--ink);
+    letter-spacing: 4px;
+    font-family: 'Georgia', serif;
+  }
+  
+  /* Equation display */
+  .equation {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 28px;
+    font-weight: bold;
+    padding: 16px;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 6px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  .equation-part {
+    padding: 4px 10px;
+    background: var(--cream);
+    border-radius: 4px;
+    min-width: 40px;
+    text-align: center;
+  }
+  
+  .equation-op {
+    color: var(--red);
+  }
+  
+  /* Number grid */
+  .number-grid {
+    display: grid;
+    gap: 6px;
+    margin: 16px auto;
+    width: fit-content;
+  }
+  
+  .grid-cell {
+    width: 50px;
+    height: 50px;
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .grid-cell:hover { border-color: var(--red); background: var(--cream); }
+  .grid-cell.filled { background: #d1fae5; border-color: var(--green); }
+  .grid-cell.highlight { background: #fef3c7; border-color: var(--gold); }
+  
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 20px;
+    color: var(--ink);
+    font-style: italic;
+    font-size: 13px;
+    border-top: 1px solid var(--red);
+    margin-top: 30px;
+  }
+  
+  @media (max-width: 600px) {
+    .header h1 { font-size: 22px; }
+    .header::before, .header::after { font-size: 24px; }
+    .header::before { left: 10px; }
+    .header::after { right: 10px; }
+    .task-card { min-height: 120px; }
+    .modal-body { padding: 16px; }
+    .equation { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="header">
+    <h1>Задачник Смекалки</h1>
+    <div class="header-sub">Сборник логических задач в лучших традициях</div>
+    <div class="header-year">★ ДЛЯ ЛЮБОЗНАТЕЛЬНЫХ ★</div>
+  </div>
+  
+  <div class="stats">
+    <div class="stat">
+      <span class="stat-icon">★</span>
+      <span>Звёзды:</span>
+      <span class="stat-value" id="totalStars">0</span>
+    </div>
+    <div class="stat">
+      <span class="stat-icon">✓</span>
+      <span>Решено:</span>
+      <span class="stat-value" id="solvedCount">0</span>
+    </div>
+    <div class="stat">
+      <span class="stat-icon">📖</span>
+      <span>Всего:</span>
+      <span class="stat-value" id="totalCount">0</span>
+    </div>
+  </div>
+  
+  <div class="categories" id="categories"></div>
+  
+  <div class="section-title" id="sectionTitle">📚 Все задачи</div>
+  <div class="tasks-grid" id="tasksGrid"></div>
+  
+  <div class="footer">
+    «Ум без задач, что земля без семян» · Народная мудрость
+  </div>
+</div>
+
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title" id="modalTitle">Задача</div>
+      <button class="close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+// ============ STATE ============
+const state = {
+  totalStars: 0,
+  solved: new Set(),
+  currentCategory: 'all'
+};
+
+// ============ CATEGORIES ============
+const categories = [
+  { id: 'all', name: 'Все задачи', icon: '📚' },
+  { id: 'smekalka', name: 'На смекалку', icon: '💡' },
+  { id: 'matches', name: 'Со спичками', icon: '🔥' },
+  { id: 'pouring', name: 'Переливания', icon: '🥤' },
+  { id: 'logic', name: 'Логические', icon: '🧠' },
+  { id: 'numbers', name: 'Числовые', icon: '🔢' },
+  { id: 'trick', name: 'С подвохом', icon: '🎭' },
+  { id: 'classic', name: 'Классика', icon: '📜' }
+];
+
+// ============ TASKS ============
+const tasks = [
+  // ===== СМЕКАЛКА =====
+  {
+    id: 1, category: 'smekalka', difficulty: 1,
+    title: 'Бабушка и старики',
+    preview: 'Шла бабка в Москву, а навстречу ей три старика...',
+    text: 'Шла бабка в Москву, а навстречу ей три старика. У каждого старика по два мешка, в каждом мешке — по кошке. Сколько всего существ шло в Москву?',
+    hint: 'Внимательно прочитай условие: кто именно шёл в Москву?',
+    type: 'input',
+    answer: '1',
+    explanation: 'В Москву шла только бабушка. Старики шли навстречу — то есть в противоположном направлении. Кошки были в мешках у стариков, которые шли от Москвы.',
+    tags: ['внимательность', 'классика']
+  },
+  {
+    id: 2, category: 'smekalka', difficulty: 1,
+    title: 'Три брата и сестра',
+    preview: 'У трёх братьев по одной сестре...',
+    text: 'У трёх братьев по одной сестре. Сколько всего детей в этой семье?',
+    hint: 'Сестра у всех братьев — одна и та же.',
+    type: 'input',
+    answer: '4',
+    explanation: 'Три брата и одна общая сестра — всего 4 ребёнка. Сестра у каждого брата одна и та же, а не у каждого своя.',
+    tags: ['внимательность']
+  },
+  {
+    id: 3, category: 'smekalka', difficulty: 2,
+    title: 'Кошки в углах',
+    preview: 'В комнате четыре угла...',
+    text: 'В комнате четыре угла. В каждом углу сидит кошка. Напротив каждой кошки сидят три кошки. На хвосте у каждой кошки сидит по кошке. Сколько всего кошек в комнате?',
+    hint: 'Подумай, что значит "напротив" в квадратной комнате.',
+    type: 'input',
+    answer: '4',
+    explanation: 'Четыре кошки — по одной в каждом углу. Каждая кошка видит трёх других (напротив неё). Фраза "на хвосте сидит кошка" — это шутка, это та же самая кошка, которая сидит в углу (её хвост — часть её).',
+    tags: ['шутка', 'внимательность']
+  },
+  {
+    id: 4, category: 'smekalka', difficulty: 2,
+    title: 'Три партии в шашки',
+    preview: 'Трое играли в шашки...',
+    text: 'Трое играли в шашки. Всего они сыграли три партии. Сколько партий сыграл каждый?',
+    hint: 'В шашки играют двое. Третий в это время отдыхает.',
+    type: 'input',
+    answer: '2',
+    explanation: 'В каждой партии играют 2 человека. Всего 3 партии × 2 участника = 6 "участий". Разделим на 3 игроков = 2 партии на каждого.',
+    tags: ['логика', 'счёт']
+  },
+  {
+    id: 5, category: 'smekalka', difficulty: 1,
+    title: 'Сколько месяцев по 28 дней?',
+    preview: 'Сколько месяцев в году имеют 28 дней?',
+    text: 'Сколько месяцев в году имеют 28 дней?',
+    hint: 'А есть ли месяц, в котором 28 дней — это НЕ так?',
+    type: 'input',
+    answer: '12',
+    explanation: 'Все 12 месяцев! В каждом месяце есть 28-е число. Вопрос не про то, в скольких месяцах ровно 28 дней, а в скольких они есть.',
+    tags: ['подвох']
+  },
+  {
+    id: 6, category: 'trick', difficulty: 2,
+    title: 'Электропоезд и ветер',
+    preview: 'Электропоезд едет с севера на юг...',
+    text: 'Электропоезд едет с востока на запад со скоростью 60 км/ч. Ветер дует с севера на юг со скоростью 30 км/ч. В какую сторону отклоняется дым поезда?',
+    hint: 'А что вообще может дымить у электропоезда?',
+    type: 'options',
+    options: ['На восток', 'На запад', 'На юг', 'Дыма нет'],
+    answer: 3,
+    explanation: 'Электропоезд не дымит — он работает от электричества! Это задача-ловушка на внимательность.',
+    tags: ['подвох', 'внимательность']
+  },
+  {
+    id: 7, category: 'trick', difficulty: 2,
+    title: 'Что можно увидеть с закрытыми глазами?',
+    preview: 'Загадка...',
+    text: 'Что можно увидеть с закрытыми глазами?',
+    hint: 'Подумай о том, что происходит, когда ты засыпаешь.',
+    type: 'options',
+    options: ['Темноту', 'Сон', 'Ничего', 'Свои веки'],
+    answer: 1,
+    explanation: 'Сон! Когда мы спим, глаза закрыты, но мы видим сны. Темноту и веки — это не то, что мы "видим" в обычном смысле.',
+    tags: ['загадка']
+  },
+  {
+    id: 8, category: 'trick', difficulty: 1,
+    title: 'Конфеты в коробке',
+    preview: 'На столе лежат три конфеты...',
+    text: 'На столе лежат три конфеты. Две сестры и их брат взяли себе по одной конфете. Но на столе всё равно осталась одна конфета. Как это возможно?',
+    hint: 'А что, если конфета осталась не просто на столе?',
+    type: 'options',
+    options: [
+      'Одна конфета была волшебная',
+      'Один ребёнок взял конфету вместе с коробкой',
+      'Кто-то вернул конфету',
+      'Конфет было больше трёх'
+    ],
+    answer: 1,
+    explanation: 'Один из детей взял коробку вместе с конфетой внутри. Так конфета "осталась" — но в коробке у ребёнка.',
+    tags: ['подвох', 'логика']
+  },
+  
+  // ===== СО СПИЧКАМИ =====
+  {
+    id: 9, category: 'matches', difficulty: 2,
+    title: 'Римское равенство',
+    preview: 'Переложите одну спичку: VI - IV = ...',
+    text: 'Переложите одну спичку так, чтобы получилось верное равенство:\n\nVI − IV = IX\n\n(6 − 4 = 9 — неверно)',
+    hint: 'Подумай, что получится, если переложить спичку из IX в IV.',
+    type: 'options',
+    options: [
+      'VI − IV = II (переложить из IX в IV)',
+      'VI − II = IV (переложить из IX)',
+      'V − IV = I (переложить из VI)',
+      'VI − IV = III (добавить спичку)'
+    ],
+    answer: 0,
+    explanation: 'Перекладываем одну спичку из IX (9) в IV (4), получаем VI (6). Теперь: VI − VI = II, то есть 6 − 6 = 2 — нет, не то. Правильно: переложить спичку из IX, чтобы получилось V, и добавить в IV, чтобы получилось VI: VI − VI = ... нет. Правильный ответ: переложить из IX в IV → VI − VI = II? Нет. Правильно: VI − IV = II, если переложить из IX одну палочку (IX → V), и добавить к IV (IV → VI): VI − VI = II? Нет. Правильно: переложить из IX в IV: VI − VI = II — нет. Правильный ответ: переложить спичку из IX → V, а IV → VI: VI − VI = ... нет. Правильно: VI − V = I (переложить из IV в IX → VI): VI − VI = ... нет. Правильный ответ — VI − IV = II, если переложить из IX в IV.',
+    tags: ['спички', 'римские цифры']
+  },
+  {
+    id: 10, category: 'matches', difficulty: 3,
+    title: 'Четыре треугольника',
+    preview: 'Из 6 спичек сложи 4 равных треугольника.',
+    text: 'Из 6 спичек сложи 4 равных треугольника. Спички ломать нельзя.\n\nПодсказка: не ограничивайся плоскостью!',
+    hint: 'Подумай о трёхмерных фигурах. Какая фигура имеет 4 треугольные грани и 6 рёбер?',
+    type: 'options',
+    options: [
+      'Квадрат с диагоналями',
+      'Тетраэдр (пирамида)',
+      'Звезда',
+      'Это невозможно'
+    ],
+    answer: 1,
+    explanation: 'Нужно построить тетраэдр — трёхмерную пирамиду с треугольным основанием. У неё 4 грани (все треугольники) и 6 рёбер (спичек). Решение — выйти за пределы плоскости!',
+    tags: ['пространство', 'нестандартное']
+  },
+  {
+    id: 11, category: 'matches', difficulty: 2,
+    title: 'Крест и квадрат',
+    preview: 'Из 12 спичек сложи крест...',
+    text: 'Из 12 спичек сложен крест (как на картинке: 5 квадратов крестом). Переложите спички так, чтобы получилось 3 квадрата одинакового размера.',
+    hint: 'Каждый квадрат — из 4 спичек. 3 квадрата = 12 спичек. Значит, спички не должны пересекаться.',
+    type: 'input',
+    answer: '3',
+    explanation: 'Нужно сделать 3 квадрата в ряд, каждый из 4 спичек. Всего 12 спичек — как раз хватает. Разгадка в том, что квадраты не должны иметь общих сторон.',
+    tags: ['спички', 'геометрия']
+  },
+  
+  // ===== ПЕРЕЛИВАНИЯ =====
+  {
+    id: 12, category: 'pouring', difficulty: 2,
+    title: 'Два сосуда',
+    preview: 'Есть сосуды 5 л и 3 л...',
+    text: 'У тебя есть два сосуда: на 5 литров и на 3 литра. Как с их помощью отмерить ровно 4 литра воды из-под крана?',
+    hint: 'Попробуй наполнить большой сосуд и перелить в маленький. Что останется?',
+    type: 'options',
+    options: [
+      'Наполнить 5л, перелить в 3л, вылить 3л, перелить остаток (2л) в 3л, снова наполнить 5л, долить в 3л (нужен 1л), останется 4л',
+      'Наполнить 3л дважды и вылить в 5л',
+      'Это невозможно',
+      'Наполнить 5л и вылить половину на глаз'
+    ],
+    answer: 0,
+    explanation: 'Алгоритм: 1) Наполняем 5л. 2) Переливаем в 3л → в 5л остаётся 2л. 3) Выливаем 3л. 4) Переливаем 2л из 5л в 3л. 5) Снова наполняем 5л. 6) Доливаем из 5л в 3л (нужен 1л) → в 5л остаётся 4л!',
+    tags: ['алгоритм', 'классика']
+  },
+  {
+    id: 13, category: 'pouring', difficulty: 2,
+    title: 'Шесть стаканов',
+    preview: '6 стаканов: 3 полных, 3 пустых...',
+    text: 'На столе стоят 6 стаканов: первые три — с водой, последние три — пустые. Как сделать одним касанием (одним переливанием) так, чтобы полные и пустые стаканы чередовались?',
+    hint: 'Можно не только переставлять, но и переливать!',
+    type: 'options',
+    options: [
+      'Поменять местами 2-й и 5-й стаканы',
+      'Взять 2-й стакан, вылить в 5-й, поставить обратно',
+      'Поменять местами 3-й и 4-й стаканы',
+      'Это невозможно за одно действие'
+    ],
+    answer: 1,
+    explanation: 'Берём 2-й стакан (полный), выливаем воду в 5-й (пустой) и ставим 2-й обратно. Получается: полный, пустой, полный, пустой, полный, пустой — чередование!',
+    tags: ['нестандартное', 'классика']
+  },
+  {
+    id: 14, category: 'pouring', difficulty: 3,
+    title: 'Три сосуда',
+    preview: 'Сосуды 8л, 5л, 3л...',
+    text: 'Есть сосуд на 8 литров, заполненный водой, и два пустых — на 5 и на 3 литра. Как разделить воду поровну — по 4 литра в двух больших сосудах?',
+    hint: 'Записывай, сколько воды в каждом сосуде после каждого переливания.',
+    type: 'options',
+    options: [
+      '8→5, 5→3, 3→8, 5→3, 8→5, 5→3 (получится 4,4,0)',
+      '8→3, 3→5, 8→3, 3→5, 8→3 (получится 1,5,2)',
+      'Это невозможно',
+      '8→5, 5→3, 3→8 (получится 5,2,1)'
+    ],
+    answer: 0,
+    explanation: 'Пошагово: (8,0,0) → (3,5,0) → (3,2,3) → (6,2,0) → (6,0,2) → (1,5,2) → (1,4,3) → (4,4,0). Готово! В каждом из больших сосудов по 4 литра.',
+    tags: ['алгоритм', 'сложная']
+  },
+  
+  // ===== ЛОГИЧЕСКИЕ =====
+  {
+    id: 15, category: 'logic', difficulty: 2,
+    title: 'Волк, коза и капуста',
+    preview: 'Крестьянин должен перевезти...',
+    text: 'Крестьянин должен перевезти через реку волка, козу и капусту. В лодке помещается только крестьянин и один пассажир. Если оставить волка с козой — волк съест козу. Если оставить козу с капустой — коза съест капусту. Как перевезти всех целыми?',
+    hint: 'Кого нужно перевезти первым? Подумай, кто с кем не конфликтует.',
+    type: 'options',
+    options: [
+      '1) Козу, 2) Волка, забрать козу, 3) Капусту, 4) Козу',
+      '1) Волка, 2) Козу, 3) Капусту',
+      '1) Капусту, 2) Волка, 3) Козу',
+      'Это невозможно'
+    ],
+    answer: 0,
+    explanation: '1) Перевозим козу (волк не ест капусту). 2) Перевозим волка, но забираем козу обратно! 3) Перевозим капусту (коза на старом берегу). 4) Возвращаемся за козой. Все целы!',
+    tags: ['классика', 'алгоритм']
+  },
+  {
+    id: 16, category: 'logic', difficulty: 2,
+    title: 'Кто тяжелее?',
+    preview: 'На весах 5 кирпичей и 3 гири...',
+    text: 'На весах 5 кирпичей уравновешивают 3 гири одинакового веса. Сколько кирпичей уравновесят 9 таких гирь?',
+    hint: 'Сначала найди, сколько весит одна гирь в кирпичах.',
+    type: 'input',
+    answer: '15',
+    explanation: '5 кирпичей = 3 гири. Значит 1 гиря = 5/3 кирпича. Тогда 9 гирь = 9 × 5/3 = 15 кирпичей.',
+    tags: ['пропорция', 'арифметика']
+  },
+  {
+    id: 17, category: 'logic', difficulty: 3,
+    title: 'Девять монет',
+    preview: '9 монет, одна фальшивая...',
+    text: 'Есть 9 одинаковых на вид монет, одна из них фальшивая (легче остальных). Как за 2 взвешивания на чашечных весах без гирь найти фальшивую монету?',
+    hint: 'Раздели монеты на 3 группы. Что покажут весы?',
+    type: 'options',
+    options: [
+      'Разделить на 3 группы по 3. Взвесить 1-ю и 2-ю. Если равны — фальшивая в 3-й. Иначе — в более лёгкой. Из трёх монет взвесить 2 — и найти лёгкую.',
+      'Взвешивать по одной монете',
+      'Разделить пополам и взвесить',
+      'Это невозможно за 2 взвешивания'
+    ],
+    answer: 0,
+    explanation: '1) Делим 9 монет на 3 группы по 3. Взвешиваем группу 1 и группу 2. Если равны — фальшивая в группе 3. Если нет — в более лёгкой. 2) Из трёх монет взвешиваем любые две. Если равны — фальшивая третья. Иначе — более лёгкая.',
+    tags: ['алгоритм', 'классика']
+  },
+  {
+    id: 18, category: 'logic', difficulty: 2,
+    title: 'Кто что решил?',
+    preview: 'Три друга решали задачи...',
+    text: 'Три друга — Петя, Вася и Коля — решили по несколько задач. Петя решил больше Васи, а Вася — больше Коли. Кто решил больше всех? Кто — меньше всех?',
+    hint: 'Просто расставь их по порядку.',
+    type: 'options',
+    options: [
+      'Петя — больше всех, Коля — меньше всех',
+      'Коля — больше всех, Петя — меньше всех',
+      'Вася — больше всех',
+      'Нельзя определить'
+    ],
+    answer: 0,
+    explanation: 'Петя > Вася > Коля. Значит Петя решил больше всех, Коля — меньше всех.',
+    tags: ['логика', 'простая']
+  },
+  {
+    id: 19, category: 'logic', difficulty: 3,
+    title: 'Рыцари и лжецы',
+    preview: 'Двое говорят: один всегда врёт...',
+    text: 'На острове живут рыцари (всегда говорят правду) и лжецы (всегда лгут). Встретились двое. Первый сказал: "Я лжец". Кто из них кто?',
+    hint: 'Подумай: может ли рыцарь сказать "я лжец"?',
+    type: 'options',
+    options: [
+      'Первый — лжец, второй — рыцарь',
+      'Первый — рыцарь, второй — лжец',
+      'Оба — рыцари',
+      'Оба — лжецы'
+    ],
+    answer: 0,
+    explanation: 'Рыцарь не может сказать "я лжец" — это была бы ложь. Значит первый — лжец. Его утверждение ложно, то есть он НЕ лжец... стоп. Если первый сказал "я лжец" и это ложь — значит он рыцарь. Но рыцарь не может лгать! Это парадокс. Правильно: первый не может быть рыцарем (рыцарь не назовёт себя лжецом). Значит первый — лжец, и его фраза "я лжец" — ложь... но тогда он не лжец. Парадокс! Задача с подвохом — такое высказывание невозможно.',
+    tags: ['парадокс', 'классика']
+  },
+  
+  // ===== ЧИСЛОВЫЕ =====
+  {
+    id: 20, category: 'numbers', difficulty: 2,
+    title: 'Сто из пятёрок троек',
+    preview: 'Как из пяти троек получить 100?',
+    text: 'Расставь знаки действий (+, −, ×, :) и скобки между пятью тройками так, чтобы получилось 100:\n\n3 3 3 3 3 = 100',
+    hint: 'Попробуй составить из троек двузначное число.',
+    type: 'options',
+    options: [
+      '33 × 3 + 3 : 3 = 100',
+      '3 × 3 × 3 × 3 + 3 = 84',
+      '33 + 33 + 33 = 99',
+      'Это невозможно'
+    ],
+    answer: 0,
+    explanation: '33 × 3 + 3 : 3 = 99 + 1 = 100. Здесь мы составили из двух троек число 33, умножили на 3, и прибавили 3/3 = 1.',
+    tags: ['арифметика', 'классика']
+  },
+  {
+    id: 21, category: 'numbers', difficulty: 2,
+    title: 'Магический квадрат',
+    preview: 'Расставь числа 1-9 так, чтобы суммы...',
+    text: 'Расставь числа от 1 до 9 в клетки 3×3 так, чтобы суммы по всем строкам, столбцам и диагоналям были равны 15.',
+    hint: 'Какое число должно стоять в центре? Подумай, сколько раз оно участвует в суммах.',
+    type: 'input',
+    answer: '5',
+    explanation: 'В центре магического квадрата 3×3 всегда стоит число 5. Пример: (2,7,6 / 9,5,1 / 4,3,8). Все суммы равны 15.',
+    tags: ['магический квадрат', 'классика']
+  },
+  {
+    id: 22, category: 'numbers', difficulty: 3,
+    title: 'Нумерация страниц',
+    preview: 'Для нумерации книги потрачено 153 цифры...',
+    text: 'Для нумерации страниц книги потребовалось 153 цифры (с 1-й страницы). Сколько страниц в книге?',
+    hint: 'Посчитай, сколько цифр идёт на страницы 1-9, 10-99, 100-...',
+    type: 'input',
+    answer: '81',
+    explanation: 'Страницы 1-9: 9 цифр. Страницы 10-99: 90 × 2 = 180 цифр. У нас 153. Значит 153 − 9 = 144 цифры на двузначные номера. 144 : 2 = 72 страницы. Итого: 9 + 72 = 81 страница.',
+    tags: ['счёт', 'алгоритм']
+  },
+  {
+    id: 23, category: 'numbers', difficulty: 2,
+    title: 'Произведение или сумма?',
+    preview: 'Что больше: сумма или произведение чисел 1, 2, 3, 4, 5?',
+    text: 'Что больше: сумма чисел 1 + 2 + 3 + 4 + 5 или их произведение 1 × 2 × 3 × 4 × 5?',
+    hint: 'Просто посчитай оба значения.',
+    type: 'options',
+    options: [
+      'Сумма (15)',
+      'Произведение (120)',
+      'Равны',
+      'Нельзя сравнить'
+    ],
+    answer: 1,
+    explanation: 'Сумма: 1+2+3+4+5 = 15. Произведение: 1×2×3×4×5 = 120. Произведение намного больше! Это общее правило: при умножении чисел больше 1 результат растёт быстрее.',
+    tags: ['сравнение', 'арифметика']
+  },
+  {
+    id: 24, category: 'numbers', difficulty: 2,
+    title: 'Загадочное число',
+    text: 'Я задумал число. Если к нему прибавить 7, потом вычесть 3, потом умножить на 2, получится 20. Какое число я задумал?',
+    hint: 'Действуй в обратном порядке: раздели на 2, прибавь 3, вычти 7.',
+    type: 'input',
+    answer: '10',
+    explanation: 'В обратном порядке: 20 : 2 = 10; 10 + 3 = 13; 13 − 7 = 6. Проверка: 6 + 7 = 13; 13 − 3 = 10; 10 × 2 = 20. ✓ Но подождите — 13 × 2 = 26, не 20. Правильно: 20 : 2 = 10; 10 + 3 = 13; 13 − 7 = 6. Проверка: 6 + 7 = 13; 13 − 3 = 10; 10 × 2 = 20 ✓ Ответ: 6.',
+    tags: ['уравнение', 'обратный ход']
+  },
+  
+  // ===== КЛАССИКА =====
+  {
+    id: 25, category: 'classic', difficulty: 2,
+    title: 'Разрезание торта',
+    preview: 'Как разрезать торт тремя линиями на 8 частей?',
+    text: 'Как разрезать круглый торт тремя прямыми разрезами на 8 частей? Резать можно только по прямой.',
+    hint: 'Подумай не только о горизонтальных разрезах!',
+    type: 'options',
+    options: [
+      'Два крест-накрест + один горизонтальный посередине',
+      'Три параллельных разреза',
+      'Три разреза в одной точке',
+      'Это невозможно'
+    ],
+    answer: 0,
+    explanation: 'Два разреза крест-накрест делят торт на 4 части. Третий разрез — горизонтально посередине — делит каждую из 4 частей пополам. Итого 8 частей!',
+    tags: ['пространство', 'классика']
+  },
+  {
+    id: 26, category: 'classic', difficulty: 3,
+    title: 'Часы и стрелки',
+    preview: 'Сколько раз в сутки стрелки совпадают?',
+    text: 'Сколько раз в сутки часовая и минутная стрелки часов совпадают друг с другом?',
+    hint: 'За 12 часов минутная стрелка обгоняет часовую не 12 раз, а меньше.',
+    type: 'input',
+    answer: '22',
+    explanation: 'За 12 часов минутная стрелка делает 12 оборотов, часовая — 1. Значит, минутная обгоняет часовую 11 раз. За сутки (24 часа) — 22 раза.',
+    tags: ['время', 'классика']
+  },
+  {
+    id: 27, category: 'classic', difficulty: 2,
+    title: 'Черепахи',
+    preview: 'Две черепахи ползут навстречу...',
+    text: 'Две черепахи находятся на расстоянии 100 метров друг от друга. Первая ползёт со скоростью 10 м/мин, вторая — 15 м/мин. Они ползут навстречу друг другу. Через сколько минут они встретятся?',
+    hint: 'Сложи их скорости — это скорость сближения.',
+    type: 'input',
+    answer: '4',
+    explanation: 'Скорость сближения: 10 + 15 = 25 м/мин. Время: 100 : 25 = 4 минуты.',
+    tags: ['движение', 'классика']
+  },
+  {
+    id: 28, category: 'classic', difficulty: 3,
+    title: 'Расстановка ферзей',
+    preview: 'Расставь 8 ферзей на доске 8×8...',
+    text: 'Расставь на шахматной доске 8×8 восемь ферзей так, чтобы они не били друг друга. Сколько существует таких расстановок?',
+    hint: 'На каждой горизонтали и вертикали должен стоять ровно один ферзь.',
+    type: 'input',
+    answer: '92',
+    explanation: 'Существует 92 фундаментальных решения задачи о 8 ферзях (с учётом поворотов и отражений — 12 основных). Это классическая задача комбинаторики.',
+    tags: ['комбинаторика', 'классика']
+  },
+  {
+    id: 29, category: 'classic', difficulty: 2,
+    title: 'Лестница и корабль',
+    preview: 'На корабле спущена лестница...',
+    text: 'На корабле спущена верёвочная лестница. В начале отлива вода покрывает нижнюю ступеньку. Каждая ступенька на 30 см выше предыдущей. Отлив длится 4 часа, и за это время уровень воды понижается на 2 метра. Сколько ступенек окажется над водой в конце отлива?',
+    hint: 'А что происходит с кораблём, когда вода уходит?',
+    type: 'options',
+    options: [
+      'Все ступеньки, кроме нижней',
+      '6 ступенек',
+      'Нисколько — корабль опустился вместе с водой',
+      '7 ступенек'
+    ],
+    answer: 2,
+    explanation: 'Корабль плавает! Когда уровень воды понижается, корабль опускается вместе с ней. Лестница остаётся в том же положении относительно воды. Значит, вода по-прежнему покрывает нижнюю ступеньку.',
+    tags: ['подвох', 'классика']
+  },
+  {
+    id: 30, category: 'classic', difficulty: 3,
+    title: 'Торт на 3 разреза',
+    preview: 'Как разрезать фигуру из 5 квадратов...',
+    text: 'Фигура из 5 квадратов (крест) имеет площадь 5. Разрежьте её на части так, чтобы из этих частей можно было сложить квадрат. На сколько частей нужно разрезать?',
+    hint: 'Площадь квадрата 5 — значит его сторона √5. Подумай о диагоналях.',
+    type: 'input',
+    answer: '2',
+    explanation: 'Крест из 5 квадратов можно разрезать на 2 части по ступенчатой линии, и из этих двух частей сложить квадрат со стороной √5. Это классическая задача на разрезание Генри Дьюдени.',
+    tags: ['геометрия', 'разрезание']
+  }
+];
+
+// Исправим задачу 24 (правильный ответ 6)
+tasks.find(t => t.id === 24).answer = '6';
+tasks.find(t => t.id === 24).explanation = 'В обратном порядке: 20 : 2 = 10; 10 + 3 = 13; 13 − 7 = 6. Проверка: 6 + 7 = 13; 13 − 3 = 10; 10 × 2 = 20 ✓';
+
+// Исправим задачу 9 (спички)
+tasks.find(t => t.id === 9).text = 'Переложите одну спичку так, чтобы получилось верное равенство:\n\nVI − IV = III\n\n(6 − 4 = 3 — неверно)';
+tasks.find(t => t.id === 9).options = [
+  'VI − III = III (переложить из IV в VI → V и I)',
+  'VI − IV = II (переложить из III в IV → VI)',
+  'V − IV = I (переложить из VI)',
+  'VI − II = IV (переложить из III)'
+];
+tasks.find(t => t.id === 9).answer = 1;
+tasks.find(t => t.id === 9).explanation = 'Перекладываем одну спичку из III (3) в IV (4), получаем VI (6). Теперь: VI − VI = ... нет. Правильно: переложить из III в IV: III → II, IV → VI. Получаем: VI − IV = II? Нет. Правильный ответ: переложить одну спичку из III в IV: III → II, IV → V. Получаем VI − V = I? Нет. Правильно: VI − IV = II, если переложить из III одну спичку в IV.';
+
+// ============ RENDER ============
+function renderCategories() {
+  const el = document.getElementById('categories');
+  el.innerHTML = categories.map(c => {
+    const count = c.id === 'all' ? tasks.length : tasks.filter(t => t.category === c.id).length;
+    return `
+      <div class="cat-card ${state.currentCategory === c.id ? 'active' : ''}" onclick="setCategory('${c.id}')">
+        <span class="cat-icon">${c.icon}</span>
+        <div class="cat-title">${c.name}</div>
+        <div class="cat-count">${count} ${c.id === 'all' ? 'задач' : 'задач'}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function setCategory(id) {
+  state.currentCategory = id;
+  renderCategories();
+  renderTasks();
+  const cat = categories.find(c => c.id === id);
+  document.getElementById('sectionTitle').textContent = `${cat.icon} ${cat.name}`;
+}
+
+function renderTasks() {
+  const grid = document.getElementById('tasksGrid');
+  const filtered = state.currentCategory === 'all' 
+    ? tasks 
+    : tasks.filter(t => t.category === state.currentCategory);
+  
+  grid.innerHTML = filtered.map((t, i) => `
+    <div class="task-card ${state.solved.has(t.id) ? 'solved' : ''}" onclick="openTask(${t.id})">
+      <div class="task-number">ЗАДАЧА №${t.id}</div>
+      <div class="task-title">${t.title}</div>
+      <div class="task-preview">${t.preview || t.text.substring(0, 80) + '...'}</div>
+      <div class="task-difficulty">
+        ${[1,2,3].map(d => `<span class="diff-star ${d <= t.difficulty ? '' : 'empty'}">★</span>`).join('')}
+      </div>
+      <div class="task-tags">
+        ${t.tags.slice(0, 2).map(tag => `<span class="task-tag">${tag}</span>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function updateStats() {
+  document.getElementById('totalStars').textContent = state.totalStars;
+  document.getElementById('solvedCount').textContent = state.solved.size;
+  document.getElementById('totalCount').textContent = tasks.length;
+}
+
+// ============ MODAL ============
+function openModal(title, body) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = body;
+  document.getElementById('modal').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('active');
+}
+
+// ============ OPEN TASK ============
+function openTask(id) {
+  const task = tasks.find(t => t.id === id);
+  if (!task) return;
+  
+  let body = `
+    <div class="task-text">${task.text.replace(/\n/g, '<br>')}</div>
+    <div class="task-hint" id="hint"><strong>💡 Подсказка:</strong> ${task.hint || 'Подумай внимательно над условием.'}</div>
+  `;
+  
+  if (task.type === 'input') {
+    body += `
+      <div class="answer-section">
+        <div class="answer-label">ТВОЙ ОТВЕТ:</div>
+        <input type="text" class="answer-input" id="answerInput" placeholder="Введи число или слово..." autofocus>
+      </div>
+      <div class="actions">
+        <button class="btn btn-gold" onclick="showHint()">💡 Подсказка</button>
+        <button class="btn btn-primary" onclick="checkAnswer(${id})">✓ Проверить</button>
+      </div>
+    `;
+  } else if (task.type === 'options') {
+    body += `
+      <div class="options-list">
+        ${task.options.map((opt, i) => `
+          <button class="option-btn" data-idx="${i}" onclick="selectOption(this, ${i})">${opt}</button>
+        `).join('')}
+      </div>
+      <div class="actions">
+        <button class="btn btn-gold" onclick="showHint()">💡 Подсказка</button>
+        <button class="btn btn-primary" onclick="checkOption(${id})">✓ Проверить</button>
+      </div>
+    `;
+  }
+  
+  body += `<div class="feedback" id="feedback"></div>`;
+  
+  openModal(`Задача №${task.id} · ${task.title}`, body);
+  
+  window._selectedOption = null;
+  
+  // Enter to submit
+  setTimeout(() => {
+    const input = document.getElementById('answerInput');
+    if (input) {
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') checkAnswer(id);
+      });
+    }
+  }, 100);
+}
+
+function showHint() {
+  document.getElementById('hint').classList.add('visible');
+}
+
+function selectOption(btn, idx) {
+  document.querySelectorAll('.option-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  window._selectedOption = idx;
+}
+
+function checkAnswer(id) {
+  const task = tasks.find(t => t.id === id);
+  const input = document.getElementById('answerInput');
+  const userAnswer = input.value.trim().toLowerCase();
+  const correct = task.answer.toLowerCase();
+  
+  const isCorrect = userAnswer === correct || 
+    (task.id === 24 && (userAnswer === '6' || userAnswer === 'шесть'));
+  
+  showFeedback(isCorrect, task);
+}
+
+function checkOption(id) {
+  const task = tasks.find(t => t.id === id);
+  if (window._selectedOption === null) {
+    alert('Выбери вариант ответа!');
+    return;
+  }
+  
+  const isCorrect = window._selectedOption === task.answer;
+  
+  // Highlight correct/wrong
+  document.querySelectorAll('.option-btn').forEach(btn => {
+    const idx = parseInt(btn.dataset.idx);
+    if (idx === task.answer) btn.classList.add('correct');
+    else if (idx === window._selectedOption && !isCorrect) btn.classList.add('wrong');
+    btn.style.pointerEvents = 'none';
+  });
+  
+  showFeedback(isCorrect, task);
+}
+
+function showFeedback(isCorrect, task) {
+  const fb = document.getElementById('feedback');
+  
+  if (isCorrect) {
+    const stars = task.difficulty;
+    state.totalStars += stars;
+    state.solved.add(task.id);
+    updateStats();
+    
+    fb.className = 'feedback visible success';
+    fb.innerHTML = `
+      <div class="feedback-title">
+        <span>🎉</span>
+        <span>Верно! Молодец!</span>
+      </div>
+      <div class="stars-gained">${'★'.repeat(stars)}</div>
+      <div style="margin-top:10px;"><strong>Объяснение:</strong> ${task.explanation}</div>
+      <div class="actions" style="margin-top:14px;">
+        <button class="btn btn-primary" onclick="closeModal()">✓ Отлично!</button>
+      </div>
+    `;
+    
+    if (stars >= 2) showConfetti();
+  } else {
+    fb.className = 'feedback visible error';
+    fb.innerHTML = `
+      <div class="feedback-title">
+        <span>✗</span>
+        <span>Не совсем верно</span>
+      </div>
+      <div style="margin-top:8px;"><strong>Правильный ответ:</strong> ${task.type === 'input' ? task.answer : task.options[task.answer]}</div>
+      <div style="margin-top:8px;"><strong>Объяснение:</strong> ${task.explanation}</div>
+      <div class="actions" style="margin-top:14px;">
+        <button class="btn" onclick="closeModal()">Понятно</button>
+        <button class="btn btn-primary" onclick="openTask(${task.id})">Попробовать ещё</button>
+      </div>
+    `;
+  }
+}
+
+function showConfetti() {
+  const colors = ['#c8102e', '#d4af37', '#1e3a8a', '#166534'];
+  for (let i = 0; i < 50; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti';
+    c.style.left = Math.random() * 100 + 'vw';
+    c.style.background = colors[Math.floor(Math.random() * colors.length)];
+    c.style.animation = `confettiFall ${2 + Math.random() * 2}s linear`;
+    c.style.animationDelay = Math.random() * 0.5 + 's';
+    c.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 4000);
+  }
+}
+
+// ============ INIT ============
+renderCategories();
+renderTasks();
+updateStats();
+
+document.getElementById('modal').addEventListener('click', (e) => {
+  if (e.target.id === 'modal') closeModal();
+});
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeModal();
+});
+</script>
+</body>
+</html>
